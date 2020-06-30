@@ -1,29 +1,33 @@
 
 const axios = require('axios');
+const { remote } = require('electron');
 
-const ul = document.querySelector('ul');
+const STATUS_OK = 200;
+const loginButton = document.getElementById('login');
 
-const loadUserData = () => {
-    axios.get('http://localhost:5000/users')
+loginButton.addEventListener("click", () => {
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    if (!username && !password) {
+        alert("Please enter your login credentials!");
+        return false;
+    }
+
+    axios.post('http://localhost:5000/login', {
+        username,
+        password
+    })
     .then((response) => {
-        console.log(response);
-        if (response.data) {
-            ul.className = 'collection';
-            response.data.map((user) => {
-                const li = document.createElement('li');
-                const text = document.createTextNode(`${user.id}.) ${user.name} - ${user.email}`);
-                li.className = 'collection-item';
-                li.appendChild(text);
-                ul.appendChild(li);
-            });
+        console.log(response)
+        if (response.status == STATUS_OK) {
+            // Load another page on current window
+            remote.getCurrentWindow().loadURL('file://' + __dirname + '/pages/create-users.html');
         }
     })
-    .catch((error) => {
-        console.log(error);
+    .catch((err) => {
+        console.log(err);
     })
-    .finally(() => {
 
-    }); 
-}
-
-loadUserData();
+});

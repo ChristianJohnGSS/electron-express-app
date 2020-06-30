@@ -1,5 +1,6 @@
 const express = require('express');
 const mysql = require('../scripts/mysqlConnection');
+
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -8,8 +9,11 @@ router.get('/', (req, res) => {
     })
 });
 
-router.get('/users', (req, res) => {
-    let SQL = "SELECT id, name, email FROM users";
+router.post('/login', (req, res) => {
+
+    const { username, password } = { ...req.body };
+
+    const SQL = `SELECT username FROM users WHERE username = '${username}' AND password = '${password}'`;
     mysql.query(SQL, (error, result, fields) => {
         if (error) {
             console.log(error);
